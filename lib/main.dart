@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
@@ -59,7 +60,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // Get a specific camera from the list of available cameras.
       widget.camera,
       // Define the resolution to use.
-      ResolutionPreset.medium,
+      ResolutionPreset.veryHigh,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -91,7 +92,13 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    final previewHeight = screenSize.height - kToolbarHeight - MediaQuery.of(context).padding.vertical;
+    final previewWidth = screenSize.width;
+
+    print(pixelRatio);
     // 240 is the width of scanner window in design draft of width 414.
+
     final windowHeight = screenSize.height / 2;
     final windowWidth = screenSize.width - 32;
     final _validRect = Rect.fromLTWH(16, 24, windowWidth, windowWidth);
@@ -106,9 +113,19 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
             return Stack(
-              alignment: Alignment.bottomCenter,
+              // alignment: Alignment.bottomCenter,
               children: [
-                CameraPreview(_controller),
+                Positioned(
+                  width: previewWidth,
+                  child: AspectRatio(
+                    aspectRatio: 1 / _controller.value.aspectRatio,
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(pi),
+                      child: CameraPreview(_controller),
+                    ),
+                  ),
+                ),
 
                 // Positioned.fromRect(
                 //   rect: _validRect,

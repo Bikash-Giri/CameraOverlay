@@ -21,6 +21,8 @@ class DisplayPictureScreen extends StatelessWidget {
     // 240 is the width of scanner window in design draft of width 414.
     final windowHeight = screenSize.height / 2;
     final windowWidth = screenSize.width - 32;
+    final deviceWidth = screenSize.width;
+
     final _validRect = Rect.fromLTWH(16, 24, windowWidth, windowWidth);
     //final bytes = getImageBytes(imagePath);
 
@@ -36,7 +38,12 @@ class DisplayPictureScreen extends StatelessWidget {
       // constructor with the given path to display the image.
       body: Stack(
         children: [
-          Image.file(File(file.path)),
+          Positioned(
+            width: deviceWidth,
+            child: Image.file(
+              File(file.path),
+            ),
+          ),
           CustomPaint(
             painter: CameraWindowPainter(
               windowRect: _validRect,
@@ -50,9 +57,12 @@ class DisplayPictureScreen extends StatelessWidget {
             onPressed: () async {
               final convertedImage = await getImage(imagePath);
               print(image);
-              print(convertedImage.height);
-              final cropWidth = (convertedImage.width * convertedImage.width) / windowWidth;
-              final croppedImage = copyCrop(convertedImage, 16, 24, windowWidth.toInt(), windowWidth.toInt() + 24);
+              final width = convertedImage.width;
+              final factor = width / deviceWidth;
+              final cropWidth = (windowWidth * factor).toInt();
+              print(factor);
+
+              final croppedImage = img.copyCrop(convertedImage, (16 * factor).toInt(), (24 * factor).toInt(), cropWidth, cropWidth);
               print('crop ko' + croppedImage.getBytes().length.toString());
               // final modifiedImage = Image.memory(croppedImage);
               final croppedImageFile = await imageToFile(croppedImage: croppedImage);
@@ -86,28 +96,4 @@ class DisplayPictureScreen extends StatelessWidget {
     print('file length' + fileLength.toString());
     return file;
   }
-}
-
-img.Image copyCrop(img.Image src, int x, int y, int w, int h) {
-  final width = src.width;
-  final height = src.height;
-  // Make sure crop rectangle is within the range of the src image.
-  x = x.clamp(0, width - 1).toInt();
-  y = y.clamp(0, height - 1).toInt();
-  if (x + w > width) {
-    w = width - x;
-  }
-  if (y + h > height) {
-    h = height - y;
-  }
-
-  final dst = img.Image(w, h, channels: src.channels, exif: src.exif, iccp: src.iccProfile);
-
-  for (var yi = 0, sy = y; yi < h; ++yi, ++sy) {
-    for (var xi = 0, sx = x; xi < w; ++xi, ++sx) {
-      dst.setPixel(xi, yi, src.getPixel(sx, sy));
-    }
-  }
-
-  return dst;
 }
