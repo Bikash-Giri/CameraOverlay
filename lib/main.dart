@@ -58,7 +58,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // Get a specific camera from the list of available cameras.
       widget.camera,
       // Define the resolution to use.
-      ResolutionPreset.medium,
+      ResolutionPreset.low,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -112,11 +112,11 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                 //   child: ColoredBox(color: Colors.red),
                 // ),
 
-                SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: ColoredBox(color: Colors.black),
-                ),
+                // SizedBox(
+                //   height: 50,
+                //   width: 50,
+                //   child: ColoredBox(color: Colors.black),
+                // ),
               ],
             );
           } else {

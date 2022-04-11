@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 
 import 'package:flutter/material.dart';
 
@@ -10,9 +11,9 @@ class DisplayCroppedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final image = Image.file(File(path));
+    final image = Image.file(File(path));
 
-    return Image.memory(imageBytes);
-    // return image;
+    // return Image.memory(imageBytes);
+    return image;
   }
 }

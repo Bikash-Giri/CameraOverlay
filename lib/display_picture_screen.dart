@@ -50,10 +50,10 @@ class DisplayPictureScreen extends StatelessWidget {
               final convertedImage = await getImage(imagePath);
               print(image);
               print(convertedImage.height);
-              final croppedImage = copyCrop(convertedImage, 16, 24, convertedImage.width.toInt() ?? 0, convertedImage.height.toInt());
+              final croppedImage = copyCrop(convertedImage, 16, 24, windowWidth.toInt(), windowWidth.toInt());
               print('crop ko' + croppedImage.getBytes().length.toString());
               // final modifiedImage = Image.memory(croppedImage);
-              final croppedImageFile = await imageToFile(croppedImage: croppedImage, imageName: 'CroppedImage', ext: 'jpg');
+              final croppedImageFile = await imageToFile(croppedImage: croppedImage);
               await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => DisplayCroppedImage(
@@ -72,16 +72,14 @@ class DisplayPictureScreen extends StatelessWidget {
     );
   }
 
-  Future<File> imageToFile({required img.Image croppedImage, required String imageName, required String ext}) async {
-    var bytes = croppedImage.getBytes();
-    print(bytes.length);
+  Future<File> imageToFile({required img.Image croppedImage}) async {
     Directory tempDir = await getTemporaryDirectory();
 
 // get temporary path from temporary directory.
     String tempPath = tempDir.path;
     print('path1' + tempPath);
     File file = File('$tempPath/profile.jpg');
-    await file.writeAsBytes(bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes));
+    await file.writeAsBytes(img.encodePng(croppedImage, level: 6));
     final fileLength = await file.length();
     print('file length' + fileLength.toString());
     return file;
