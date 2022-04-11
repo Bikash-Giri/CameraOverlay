@@ -1,5 +1,6 @@
 // A widget that displays the picture taken by the user.
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cameraoverlay/display_cropped_image.dart';
 import 'package:cameraoverlay/main.dart';
@@ -50,7 +51,8 @@ class DisplayPictureScreen extends StatelessWidget {
               final convertedImage = await getImage(imagePath);
               print(image);
               print(convertedImage.height);
-              final croppedImage = copyCrop(convertedImage, 16, 24, windowWidth.toInt(), windowWidth.toInt());
+              final cropWidth = (convertedImage.width * convertedImage.width) / windowWidth;
+              final croppedImage = copyCrop(convertedImage, 16, 24, windowWidth.toInt(), windowWidth.toInt() + 24);
               print('crop ko' + croppedImage.getBytes().length.toString());
               // final modifiedImage = Image.memory(croppedImage);
               final croppedImageFile = await imageToFile(croppedImage: croppedImage);
@@ -78,7 +80,7 @@ class DisplayPictureScreen extends StatelessWidget {
 // get temporary path from temporary directory.
     String tempPath = tempDir.path;
     print('path1' + tempPath);
-    File file = File('$tempPath/profile.jpg');
+    File file = File('$tempPath/profile-${Random.secure().nextDouble()}.jpg');
     await file.writeAsBytes(img.encodePng(croppedImage, level: 6));
     final fileLength = await file.length();
     print('file length' + fileLength.toString());
